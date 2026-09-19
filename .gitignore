@@ -1,0 +1,8 @@
+.playwright-mcp/
+*.png
+*.pdf
+*.log
+*.jpg
+node_modules/
+footage/
+exports/
