@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #4C6971;
+        font-family: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      /* accent bar top */
+      .accent-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: #F04B0C;
+      }
+      /* background pattern overlay */
+      .bg-pattern {
+        position: absolute;
+        inset: 0;
+        opacity: 0.08;
+        background-image:
+          radial-gradient(circle at 20% 50%, #F04B0C 0%, transparent 50%),
+          radial-gradient(circle at 80% 50%, #0A66C2 0%, transparent 50%);
+      }
+      /* logo */
+      #logo {
+        position: absolute;
+        top: 80px;
+        left: 120px;
+        width: 120px;
+        height: 120px;
+        opacity: 0;
+      }
+      #logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      /* main title */
+      #title {
+        color: #FFFFFF;
+        font-size: 96px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        text-align: center;
+        opacity: 0;
+        text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      }
+      #title .accent {
+        color: #F04B0C;
+      }
+      /* tagline */
+      #tagline {
+        color: rgba(255,255,255,0.85);
+        font-size: 36px;
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        margin-top: 32px;
+        opacity: 0;
+      }
+      /* CTA line */
+      #cta {
+        position: absolute;
+        bottom: 120px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        color: rgba(255,255,255,0.7);
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        opacity: 0;
+      }
+      /* orange underline */
+      .underline {
+        display: block;
+        width: 120px;
+        height: 4px;
+        background: #F04B0C;
+        margin: 24px auto 0;
+        opacity: 0;
+        border-radius: 2px;
+      }
+      /* grow engines strip */
+      #engines {
+        position: absolute;
+        bottom: 200px;
+        left: 120px;
+        right: 120px;
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        opacity: 0;
+      }
+      .engine-pill {
+        background: rgba(0,0,0,0.25);
+        color: #FFFFFF;
+        padding: 10px 20px;
+        border-radius: 100px;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        border: 1px solid rgba(240,75,12,0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div class="accent-bar"></div>
+      <div class="bg-pattern"></div>
+
+      <div id="logo">
+        <img src="https://brndguru.com/images/brnd-guru-mark.png" alt="BRND GURU">
+      </div>
+
+      <h1 id="title" class="clip" data-start="0" data-duration="10" data-track-index="0">
+        BRND<span class="accent">GURU</span>
+      </h1>
+
+      <p id="tagline" class="clip" data-start="0" data-duration="10" data-track-index="0">
+        We build Brands. Systems. Growth.
+        <span class="underline"></span>
+      </p>
+
+      <div id="engines" class="clip" data-start="0" data-duration="10" data-track-index="0">
+        <span class="engine-pill">LinkedIn Rev Engine™</span>
+        <span class="engine-pill">100K Email Rev Engine™</span>
+        <span class="engine-pill">AI Receptionist</span>
+      </div>
+
+      <p id="cta" class="clip" data-start="0" data-duration="10" data-track-index="0">
+        Your Growth Partner. Not Just a Service Provider.
+      </p>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // Accent bar wipe
+      tl.fromTo('.accent-bar', { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: 0.6 }, 0);
+
+      // Logo drop in
+      tl.to('#logo', { opacity: 1, y: -20, duration: 0.1 }, 0.2);
+      tl.to('#logo', { y: 0, duration: 0.5, ease: 'Back.easeOut' }, 0.3);
+
+      // Title - split words for staggered entrance
+      tl.to('#title', { opacity: 1, y: -30, duration: 0.1 }, 0.6);
+      tl.to('#title', { y: 0, duration: 0.7, ease: 'Power4.out' }, 0.7);
+
+      // Tagline
+      tl.to('#tagline', { opacity: 1, y: -20, duration: 0.1 }, 1.4);
+      tl.to('#tagline', { y: 0, duration: 0.5, ease: 'Power3.out' }, 1.5);
+      tl.to('.underline', { opacity: 1, scaleX: 1, transformOrigin: 'left center', duration: 0.4 }, 1.9);
+
+      // CTA
+      tl.to('#cta', { opacity: 1, duration: 0.4 }, 2.5);
+
+      // Engine pills stagger in
+      tl.to('#engines', { opacity: 1, duration: 0.2 }, 3.0);
+      tl.fromTo('.engine-pill', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, stagger: 0.12, ease: 'Back.easeOut' }, 3.0);
+
+      // Hold for remaining time
+      tl.to({}, { duration: 5.0 }, 6.0);
+
+      // Fade out
+      tl.to('#title, #tagline, #cta, #engines, #logo', { opacity: 0, duration: 0.4 }, 9.0);
+      tl.to('.accent-bar', { opacity: 0, duration: 0.2 }, 9.6);
+
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

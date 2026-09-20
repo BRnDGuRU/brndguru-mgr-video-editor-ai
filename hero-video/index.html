@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0a0e12;
+        font-family: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+        color: #FFFFFF;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      .sandbox {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      /* ---- Shared ---- */
+      .accent-bar {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: #F04B0C;
+        transform-origin: left center;
+      }
+      .grid-overlay {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+        background-size: 80px 80px;
+        pointer-events: none;
+      }
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+        pointer-events: none;
+      }
+      /* ---- Section base ---- */
+      .section {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 120px;
+      }
+      /* ---- Hook ---- */
+      #sec-hook {
+        background: #0a0e12;
+      }
+      #hook-logo {
+        position: absolute;
+        top: 80px;
+        left: 120px;
+        width: 100px;
+        height: 100px;
+        opacity: 0;
+      }
+      #hook-logo img { width: 100%; height: 100%; object-fit: contain; }
+      #hook-title {
+        font-size: 120px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        text-align: center;
+        opacity: 0;
+      }
+      #hook-title .guru { color: #F04B0C; }
+      #hook-tagline {
+        font-size: 38px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.75);
+        margin-top: 28px;
+        letter-spacing: 0.06em;
+        opacity: 0;
+      }
+      #hook-underline {
+        display: block;
+        width: 160px;
+        height: 5px;
+        background: #F04B0C;
+        margin: 24px auto 0;
+        border-radius: 3px;
+        opacity: 0;
+        transform: scaleX(0);
+        transform-origin: left center;
+      }
+      /* ---- Shift ---- */
+      #sec-shift {
+        background: linear-gradient(135deg, #0a0e12 0%, #1a2228 100%);
+        justify-content: center;
+        gap: 40px;
+      }
+      .shift-label {
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        opacity: 0;
+      }
+      .shift-label.old { color: #6b7280; }
+      .shift-label.new { color: #F04B0C; }
+      .shift-block {
+        text-align: center;
+        opacity: 0;
+      }
+      .shift-block .big {
+        font-size: 72px;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .shift-block .sub {
+        font-size: 28px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.6);
+        margin-top: 12px;
+      }
+      .shift-block.old .big { color: #6b7280; }
+      .shift-block.new .big { color: #FFFFFF; }
+      #shift-divider {
+        width: 200px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #F04B0C, transparent);
+        opacity: 0;
+        margin: 16px 0;
+      }
+      /* ---- Engines ---- */
+      #sec-engines {
+        background: #0a0e12;
+        justify-content: center;
+        gap: 60px;
+        padding: 120px;
+      }
+      #engines-label {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.5);
+        opacity: 0;
+      }
+      #engines-label .accent { color: #F04B0C; }
+      #engines-track-wrap {
+        position: relative;
+        width: 100%;
+        max-width: 1600px;
+        overflow: hidden;
+        opacity: 0;
+      }
+      #engines-track {
+        display: flex;
+        gap: 24px;
+        width: max-content;
+        padding: 80px 0;
+      }
+      .engine-card {
+        width: 280px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 32px 28px;
+        text-align: left;
+        opacity: 0;
+        transform: translateY(30px);
+        backdrop-filter: blur(8px);
+      }
+      .engine-card .num {
+        font-size: 14px;
+        font-weight: 700;
+        color: #F04B0C;
+        letter-spacing: 0.08em;
+        margin-bottom: 12px;
+      }
+      .engine-card h3 {
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+      }
+      .engine-card .tag {
+        font-size: 13px;
+        font-weight: 600;
+        color: #F04B0C;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 16px;
+      }
+      .engine-card .desc {
+        font-size: 15px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.65);
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      .engine-card .price {
+        font-size: 20px;
+        font-weight: 700;
+        color: #FFFFFF;
+        letter-spacing: -0.01em;
+      }
+      .engine-card .price span {
+        font-size: 14px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.5);
+      }
+      /* ---- Case Studies ---- */
+      #sec-cases {
+        background: linear-gradient(135deg, #0a0e12 0%, #141c22 100%);
+        justify-content: center;
+        gap: 32px;
+        padding: 100px;
+      }
+      #cases-label {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.5);
+        opacity: 0;
+      }
+      #cases-label .accent { color: #10B981; }
+      #cases-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        width: 100%;
+        max-width: 1600px;
+        opacity: 0;
+      }
+      .case-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 12px;
+        padding: 28px;
+        text-align: left;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      .case-card .client {
+        font-size: 14px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 16px;
+      }
+      .case-card .industry {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #F04B0C;
+        background: rgba(240,75,12,0.15);
+        padding: 4px 10px;
+        border-radius: 100px;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .case-card .results {
+        display: flex;
+        gap: 24px;
+        margin-top: 16px;
+      }
+      .case-card .stat {
+        text-align: center;
+      }
+      .case-card .stat .num {
+        font-size: 36px;
+        font-weight: 800;
+        color: #10B981;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .case-card .stat .label {
+        font-size: 13px;
+        font-weight: 500;
+        color: rgba(255,255,255,0.5);
+        margin-top: 6px;
+      }
+      /* ---- Stats bar ---- */
+      #stats-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 80px;
+        padding: 40px;
+        background: rgba(10,14,18,0.95);
+        border-top: 1px solid rgba(240,75,12,0.2);
+        opacity: 0;
+      }
+      .stat-item {
+        text-align: center;
+        opacity: 0;
+      }
+      .stat-item .num {
+        font-size: 48px;
+        font-weight: 800;
+        color: #F04B0C;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .stat-item .lbl {
+        font-size: 16px;
+        font-weight: 500;
+        color: rgba(255,255,255,0.6);
+        margin-top: 8px;
+        letter-spacing: 0.04em;
+      }
+      /* ---- Framework ---- */
+      #sec-framework {
+        background: #0a0e12;
+        justify-content: center;
+        gap: 40px;
+        padding: 100px;
+      }
+      #fw-label {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.5);
+        opacity: 0;
+      }
+      #fw-label .accent { color: #0A66C2; }
+      #fw-track {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        width: 100%;
+        max-width: 1700px;
+        opacity: 0;
+      }
+      .fw-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        position: relative;
+        opacity: 0;
+      }
+      .fw-step .dot {
+        width: 14px;
+        height: 14px;
+        background: #F04B0C;
+        border-radius: 50%;
+        box-shadow: 0 0 20px rgba(240,75,12,0.4);
+      }
+      .fw-step .line {
+        position: absolute;
+        top: 7px;
+        right: -1px;
+        width: 100%;
+        height: 2px;
+        background: rgba(240,75,12,0.2);
+      }
+      .fw-step:last-child .line { display: none; }
+      .fw-step .num {
+        font-size: 14px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.3);
+        letter-spacing: 0.05em;
+      }
+      .fw-step .name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #FFFFFF;
+        text-align: center;
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+      }
+      /* ---- CTA ---- */
+      #sec-cta {
+        background: linear-gradient(135deg, #0a0e12 0%, #1a1510 100%);
+        justify-content: center;
+        gap: 32px;
+        padding: 120px;
+      }
+      #cta-title {
+        font-size: 80px;
+        font-weight: 800;
+        text-align: center;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        opacity: 0;
+      }
+      #cta-title .accent { color: #F04B0C; }
+      #cta-sub {
+        font-size: 28px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.6);
+        text-align: center;
+        opacity: 0;
+        max-width: 700px;
+      }
+      #cta-btn {
+        display: inline-block;
+        background: #F04B0C;
+        color: #FFFFFF;
+        font-size: 22px;
+        font-weight: 700;
+        padding: 18px 48px;
+        border-radius: 100px;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        opacity: 0;
+        transform: scale(0.9);
+        box-shadow: 0 8px 32px rgba(240,75,12,0.35);
+      }
+      #cta-url {
+        font-size: 20px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.4);
+        text-align: center;
+        margin-top: 16px;
+        opacity: 0;
+        letter-spacing: 0.04em;
+      }
+      #cta-url .accent { color: #F04B0C; }
+      /* ---- Logo out ---- */
+      #logo-out {
+        position: absolute;
+        bottom: 80px;
+        left: 120px;
+        width: 80px;
+        height: 80px;
+        opacity: 0;
+      }
+      #logo-out img { width: 100%; height: 100%; object-fit: contain; }
+      #brand-name-out {
+        position: absolute;
+        bottom: 80px;
+        left: 220px;
+        font-size: 24px;
+        font-weight: 700;
+        color: #FFFFFF;
+        letter-spacing: 0.04em;
+        opacity: 0;
+        line-height: 1.2;
+      }
+      #brand-name-out .accent { color: #F04B0C; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="61" data-width="1920" data-height="1080">
+
+      <!-- Grid + vignette (always on) -->
+      <div class="grid-overlay"></div>
+      <div class="vignette"></div>
+
+      <!-- 0-5s: HOOK -->
+      <section id="sec-hook" class="section" data-section="hook" data-start="0" data-duration="6">
+        <div id="hook-logo"><img src="https://brndguru.com/images/brnd-guru-mark.png" alt="BRND GURU"></div>
+        <h1 id="hook-title">BRND<span class="guru">GURU</span></h1>
+        <p id="hook-tagline">We build Brands. Systems. Growth.</p>
+        <span id="hook-underline"></span>
+      </section>
+
+      <!-- 6-16s: THE SHIFT -->
+      <section id="sec-shift" class="section" data-section="shift" data-start="6" data-duration="11">
+        <p class="shift-label old">The old way</p>
+        <div class="shift-block old">
+          <div class="big">Leaking leads.<br>Empty pipelines.</div>
+          <p class="sub">Growth you can't see. Effort you can't scale.</p>
+        </div>
+        <div id="shift-divider"></div>
+        <p class="shift-label new">The BRND GURU way</p>
+        <div class="shift-block new">
+          <div class="big">One partner.<br>Six growth engines.</div>
+          <p class="sub">Built. Run. Optimized. By us.</p>
+        </div>
+      </section>
+
+      <!-- 17-32s: SIX ENGINES -->
+      <section id="sec-engines" class="section" data-section="engines" data-start="17" data-duration="16">
+        <p id="engines-label">Six <span class="accent">Growth Engines</span> — pick where you're stuck</p>
+        <div id="engines-track-wrap">
+          <div id="engines-track">
+            <div class="engine-card">
+              <div class="num">01</div>
+              <div class="tag">LinkedIn</div>
+              <h3>LinkedIn Rev Engine™</h3>
+              <p class="desc">AI-powered outbound that books qualified B2B appointments on autopilot.</p>
+              <div class="price">$1,199 <span>setup + $319/mo</span></div>
+            </div>
+            <div class="engine-card">
+              <div class="num">02</div>
+              <div class="tag">Email</div>
+              <h3>100K Email Rev Engine™</h3>
+              <p class="desc">Cold email infrastructure and AI-run campaigns that fill your calendar at scale.</p>
+              <div class="price">$649 <span>setup + $297/mo</span></div>
+            </div>
+            <div class="engine-card">
+              <div class="num">03</div>
+              <div class="tag">E-Commerce</div>
+              <h3>E-Commerce Growth Engine™</h3>
+              <p class="desc">Store, ads and retention automation built to turn traffic into repeat revenue.</p>
+              <div class="price">$1,199 <span>setup + $497/mo</span></div>
+            </div>
+            <div class="engine-card">
+              <div class="num">04</div>
+              <div class="tag">Local</div>
+              <h3>Local Business Growth Engine™</h3>
+              <p class="desc">Lead generation and follow-up automation for local service businesses.</p>
+              <div class="price">$0 <span>setup + $357/mo</span></div>
+            </div>
+            <div class="engine-card">
+              <div class="num">05</div>
+              <div class="tag">Coaching</div>
+              <h3>Coach Growth B2B Engine™</h3>
+              <p class="desc">Offer positioning, VSL funnels and LinkedIn-led client acquisition for coaches.</p>
+              <div class="price">$1,497 <span>setup + $597/mo</span></div>
+            </div>
+            <div class="engine-card">
+              <div class="num">06</div>
+              <div class="tag">AI Voice</div>
+              <h3>Receptionist AI Engine™</h3>
+              <p class="desc">The AI that answers calls, books appointments and follows up — 24/7.</p>
+              <div class="price">$497 <span>setup + $229/mo</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 33-48s: CASE STUDIES -->
+      <section id="sec-cases" class="section" data-section="cases" data-start="33" data-duration="16">
+        <p id="cases-label">Proof — <span class="accent">real results</span> from real brands</p>
+        <div id="cases-grid">
+          <div class="case-card">
+            <div class="client">Nature Empowered</div>
+            <span class="industry">E-Commerce</span>
+            <div class="results">
+              <div class="stat"><div class="num">10X</div><div class="label">Revenue</div></div>
+              <div class="stat"><div class="num">3.2X</div><div class="label">ROAS</div></div>
+            </div>
+          </div>
+          <div class="case-card">
+            <div class="client">ECO Creds</div>
+            <span class="industry">Environmental</span>
+            <div class="results">
+              <div class="stat"><div class="num">200%</div><div class="label">Traffic</div></div>
+              <div class="stat"><div class="num">150+</div><div class="label">Leads</div></div>
+            </div>
+          </div>
+          <div class="case-card">
+            <div class="client">Riggle</div>
+            <span class="industry">B2B SaaS</span>
+            <div class="results">
+              <div class="stat"><div class="num">180%</div><div class="label">Pipeline</div></div>
+              <div class="stat"><div class="num">40+</div><div class="label">Meetings/mo</div></div>
+            </div>
+          </div>
+          <div class="case-card">
+            <div class="client">Wylde Project</div>
+            <span class="industry">Web3 / NFT</span>
+            <div class="results">
+              <div class="stat"><div class="num">250K+</div><div class="label">Community</div></div>
+              <div class="stat"><div class="num">90K+</div><div class="label">Engagements</div></div>
+            </div>
+          </div>
+          <div class="case-card">
+            <div class="client">Futopia Global</div>
+            <span class="industry">Brand Repositioning</span>
+            <div class="results">
+              <div class="stat"><div class="num">300%</div><div class="label">Visibility</div></div>
+              <div class="stat"><div class="num">2.5X</div><div class="label">Leads</div></div>
+            </div>
+          </div>
+          <div class="case-card">
+            <div class="client">Crown Rice</div>
+            <span class="industry">D2C Brand</span>
+            <div class="results">
+              <div class="stat"><div class="num">4.5X</div><div class="label">Sales</div></div>
+              <div class="stat"><div class="num">2X</div><div class="label">Repeat</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 49-55s: STATS BAR -->
+      <div id="stats-bar" data-section="stats" data-start="49" data-duration="7">
+        <div class="stat-item"><div class="num" data-count="150">0</div><div class="lbl">Brands</div></div>
+        <div class="stat-item"><div class="num" data-count="300">0</div><div class="lbl">Projects</div></div>
+        <div class="stat-item"><div class="num" data-count="6">0</div><div class="lbl">Years</div></div>
+        <div class="stat-item"><div class="num" data-count="98">0<span style="font-size:28px">%</span></div><div class="lbl">Satisfaction</div></div>
+        <div class="stat-item"><div class="num" data-count="15">0</div><div class="lbl">Industries</div></div>
+      </div>
+
+      <!-- 56-61s: CTA -->
+      <section id="sec-cta" class="section" data-section="cta" data-start="56" data-duration="6">
+        <h2 id="cta-title">Your Growth Partner.<br><span class="accent">Not Just a Service Provider.</span></h2>
+        <p id="cta-sub">We combine creativity, technology and data. Strategy first. Results that scale.</p>
+        <a id="cta-btn" href="https://brndguru.com/contact" target="_blank">Book a Free Strategy Call</a>
+        <p id="cta-url">brndguru<span class="accent">.com</span></p>
+      </section>
+
+      <!-- Logo out -->
+      <div id="logo-out"><img src="https://brndguru.com/images/brnd-guru-mark.png" alt="BRND GURU"></div>
+      <div id="brand-name-out">Shivanshu Sinha<br><span class="accent">Founder & Entrepreneur</span></div>
+    </div>
+
+    <script>
+      // Master timeline — 61 seconds total
+      const master = gsap.timeline({ paused: true });
+
+      // ===== 0-6s: HOOK =====
+      master.set(['#hook-logo','#hook-title','#hook-tagline','#hook-underline'], { opacity: 0, y: 30 });
+      master.to('#hook-logo', { opacity: 1, duration: 0.08 }, 0.2);
+      master.to('#hook-logo', { y: 0, duration: 0.5, ease: 'Back.easeOut' }, 0.3);
+      master.to('#hook-title', { opacity: 1, y: 0, duration: 0.1 }, 0.7);
+      master.to('#hook-title', { y: 0, duration: 0.6, ease: 'Power4.out' }, 0.8);
+      master.to('#hook-tagline', { opacity: 1, y: 0, duration: 0.1 }, 1.4);
+      master.to('#hook-tagline', { y: 0, duration: 0.4, ease: 'Power3.out' }, 1.5);
+      master.to('#hook-underline', { opacity: 1, scaleX: 1, duration: 0.35, ease: 'Power4.out' }, 2.0);
+      master.to(['#hook-logo','#hook-title','#hook-tagline','#hook-underline'], { opacity: 0, y: -20, duration: 0.3 }, 5.5);
+
+      // ===== 6-16s: THE SHIFT =====
+      master.set(['.shift-label.old','.shift-block.old','.shift-label.new','.shift-block.new','#shift-divider'], { opacity: 0, y: 20 });
+      // Old way
+      master.to('.shift-label.old', { opacity: 1, y: 0, duration: 0.1 }, 6.3);
+      master.to('.shift-block.old', { opacity: 1, y: 0, duration: 0.1 }, 6.4);
+      master.to('.shift-block.old', { y: 0, duration: 0.5, ease: 'Power3.out' }, 6.5);
+      master.to('.shift-label.old', { opacity: 1, duration: 0.3 }, 6.8);
+      master.to('.shift-block.old', { opacity: 0, y: -15, duration: 0.3 }, 10.0);
+      master.to('.shift-label.old', { opacity: 0, duration: 0.2 }, 10.0);
+      // Divider
+      master.to('#shift-divider', { opacity: 1, scaleX: 1, duration: 0.2, ease: 'Power2.out' }, 10.2);
+      // New way
+      master.to('.shift-label.new', { opacity: 1, y: 0, duration: 0.1 }, 10.5);
+      master.to('.shift-block.new', { opacity: 1, y: 0, duration: 0.1 }, 10.6);
+      master.to('.shift-block.new', { y: 0, duration: 0.5, ease: 'Power3.out' }, 10.7);
+      master.to('.shift-label.new', { opacity: 1, duration: 0.3, delay: 0.1 }, 10.9);
+
+      // ===== 17-32s: ENGINES =====
+      master.set(['#engines-label','#engines-track-wrap'], { opacity: 0, y: 20 });
+      master.to('#engines-label', { opacity: 1, y: 0, duration: 0.1 }, 17.3);
+      master.to('#engines-label', { y: 0, duration: 0.3, ease: 'Power3.out' }, 17.4);
+      master.to('#engines-track-wrap', { opacity: 1, y: 0, duration: 0.1 }, 17.6);
+      master.to('#engines-track-wrap', { y: 0, duration: 0.3, ease: 'Power3.out' }, 17.7);
+      // Engine cards stagger
+      const cards = document.querySelectorAll('.engine-card');
+      master.to(cards, { opacity: 1, y: 0, duration: 0.3, stagger: 0.12, ease: 'Back.easeOut' }, 18.0);
+      // Horizontal drift
+      master.to('#engines-track', { x: '-=180', duration: 6, ease: 'none' }, 20.0);
+      // Reset cards for final hold
+      master.to(cards, { opacity: 1, duration: 0.1 }, 30.0);
+
+      // ===== 33-48s: CASE STUDIES =====
+      master.set(['#cases-label','#cases-grid'], { opacity: 0, y: 20 });
+      master.to('#cases-label', { opacity: 1, y: 0, duration: 0.1 }, 33.3);
+      master.to('#cases-label', { y: 0, duration: 0.3, ease: 'Power3.out' }, 33.4);
+      const caseCards = document.querySelectorAll('.case-card');
+      master.to('#cases-grid', { opacity: 1, y: 0, duration: 0.1 }, 33.6);
+      master.to(caseCards, { opacity: 1, y: 0, duration: 0.25, stagger: 0.08, ease: 'Power2.out' }, 33.7);
+
+      // ===== 49-55s: STATS BAR =====
+      master.set('#stats-bar', { opacity: 0, y: 20 });
+      master.to('#stats-bar', { opacity: 1, y: 0, duration: 0.1 }, 49.2);
+      master.to('#stats-bar', { y: 0, duration: 0.3, ease: 'Power3.out' }, 49.3);
+      // Count up animation
+      const statNums = document.querySelectorAll('#stats-bar .num');
+      master.to(statNums[0], { opacity: 1, duration: 0.1 }, 49.5);
+      master.to(statNums, { opacity: 1, duration: 0.08, stagger: 0.06 }, 49.5);
+      master.to({}, { duration: 0.5 }, 50.0);
+      // Animate counters
+      function animateCounter(el, target, suffix) {
+        const obj = { val: 0 };
+        gsap.to(obj, {
+          val: target,
+          duration: 0.8,
+          ease: 'Power2.out',
+          onUpdate: function() {
+            el.innerHTML = Math.round(obj.val) + (suffix || '');
+          },
+          onComplete: function() {
+            el.innerHTML = target + (suffix || '');
+          }
+        });
+      }
+      master.call(function() {
+        animateCounter(statNums[0], 150, '+');
+        setTimeout(() => animateCounter(statNums[1], 300, '+'), 100);
+        setTimeout(() => animateCounter(statNums[2], 6, '+'), 200);
+        setTimeout(() => animateCounter(statNums[3], 98, '%'), 300);
+        setTimeout(() => animateCounter(statNums[4], 15, '+'), 400);
+      }, [], 49.5);
+
+      // ===== 56-61s: CTA =====
+      master.set(['#cta-title','#cta-sub','#cta-btn','#cta-url','#logo-out','#brand-name-out'], { opacity: 0, y: 20 });
+      master.to('#cta-title', { opacity: 1, y: 0, duration: 0.1 }, 56.2);
+      master.to('#cta-title', { y: 0, duration: 0.4, ease: 'Power3.out' }, 56.3);
+      master.to('#cta-sub', { opacity: 1, y: 0, duration: 0.1 }, 56.6);
+      master.to('#cta-sub', { y: 0, duration: 0.3, ease: 'Power3.out' }, 56.7);
+      master.to('#cta-btn', { opacity: 1, scale: 1, duration: 0.15, ease: 'Back.easeOut' }, 57.0);
+      // Button pulse
+      master.to('#cta-btn', { boxShadow: '0 8px 40px rgba(240,75,12,0.5)', duration: 0.6, yoyo: true, repeat: 1, ease: 'Sine.easeInOut' }, 57.2);
+      master.to('#cta-url', { opacity: 1, y: 0, duration: 0.1 }, 57.4);
+      master.to('#cta-url', { y: 0, duration: 0.3, ease: 'Power3.out' }, 57.5);
+      master.to('#logo-out', { opacity: 1, y: 0, duration: 0.1 }, 58.0);
+      master.to('#logo-out', { y: 0, duration: 0.3, ease: 'Power3.out' }, 58.1);
+      master.to('#brand-name-out', { opacity: 1, y: 0, duration: 0.1 }, 58.3);
+      master.to('#brand-name-out', { y: 0, duration: 0.3, ease: 'Power3.out' }, 58.4);
+
+      window.__timelines['main'] = master;
+      master.seek(0);
+    </script>
+  </body>
+</html>

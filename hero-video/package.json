@@ -1,0 +1,14 @@
+{
+  "name": "hero-video",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "render": "hyperframes render",
+    "preview": "hyperframes preview",
+    "lint": "hyperframes lint",
+    "check": "hyperframes check"
+  },
+  "devDependencies": {
+    "hyperframes": "latest"
+  }
+}
